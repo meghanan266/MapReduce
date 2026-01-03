@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>MapReduce Performance Analysis - Assignment 4</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .chart-container {
+            width: 600px;
+            margin: 20px auto;
+        }
+
+        .summary {
+            width: 800px;
+            margin: 20px auto;
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .highlight {
+            background: #ffeb3b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>MapReduce Word Count - Performance Analysis</h1>
+
+    <div class="summary">
+        <h2>Key Findings</h2>
+        <ul>
+            <li><strong>2.07x Speedup</strong> achieved through parallel processing</li>
+            <li><strong>Consistent Performance:</strong> Average total time ~1.07 seconds</li>
+            <li><strong>Efficient Distribution:</strong> Map phase (heaviest workload) benefits most from
+                parallelization</li>
+        </ul>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="runComparison"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="phaseBreakdown"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="speedupChart"></canvas>
+    </div>
+
+    <table>
+        <tr>
+            <th>Metric</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td>Average Split Time</td>
+            <td>0.268 sec</td>
+        </tr>
+        <tr>
+            <td>Average Map Time (3 parallel mappers)</td>
+            <td>0.572 sec</td>
+        </tr>
+        <tr>
+            <td>Average Reduce Time</td>
+            <td>0.231 sec</td>
+        </tr>
+        <tr class="highlight">
+            <td>Total Parallel Time</td>
+            <td>1.071 sec</td>
+        </tr>
+        <tr>
+            <td>Estimated Sequential Time</td>
+            <td>2.215 sec</td>
+        </tr>
+        <tr class="highlight">
+            <td>Speedup Factor</td>
+            <td>2.07x</td>
+        </tr>
+    </table>
+
+    <script>
+        // Run comparison chart
+        new Chart(document.getElementById('runComparison'), {
+            type: 'line',
+            data: {
+                labels: ['Run 1', 'Run 2', 'Run 3', 'Run 4', 'Run 5'],
+                datasets: [
+                    {
+                        label: 'Split',
+                        data: [0.253, 0.301, 0.218, 0.259, 0.311],
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Map',
+                        data: [0.486, 0.440, 0.400, 0.550, 0.984],
+                        borderColor: 'rgb(54, 162, 235)',
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Reduce',
+                        data: [0.185, 0.276, 0.213, 0.183, 0.296],
+                        borderColor: 'rgb(255, 206, 86)',
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Total',
+                        data: [0.924, 1.016, 0.832, 0.992, 1.591],
+                        borderColor: 'rgb(75, 192, 192)',
+                        borderWidth: 3,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Performance Consistency Across 5 Runs'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Time (seconds)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Phase breakdown
+        new Chart(document.getElementById('phaseBreakdown'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Split (25%)', 'Map (53%)', 'Reduce (22%)'],
+                datasets: [{
+                    data: [0.268, 0.572, 0.231],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)'
+                    ]
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Average Time Distribution by Phase'
+                    }
+                }
+            }
+        });
+
+        // Speedup comparison
+        new Chart(document.getElementById('speedupChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Sequential (Estimated)', 'Parallel (Actual)'],
+                datasets: [{
+                    label: 'Execution Time (seconds)',
+                    data: [2.215, 1.071],
+                    backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(75, 192, 192, 0.5)'],
+                    borderColor: ['rgb(255, 99, 132)', 'rgb(75, 192, 192)'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Parallel vs Sequential Performance (2.07x Speedup)'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Time (seconds)'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <div class="summary">
+        <h2>Architecture Summary</h2>
+        <p><strong>Implementation:</strong> Distributed MapReduce using AWS ECS Fargate with S3</p>
+        <p><strong>Components:</strong></p>
+        <ul>
+            <li>1 Splitter Service - Divides input into 3 chunks</li>
+            <li>3 Mapper Services - Process chunks in parallel</li>
+            <li>1 Reducer Service - Aggregates results</li>
+        </ul>
+        <p><strong>Technologies:</strong> Go, Docker, AWS ECS, AWS S3, AWS ECR</p>
+    </div>
+</body>
+
+</html>

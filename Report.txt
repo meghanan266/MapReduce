@@ -1,0 +1,22 @@
+Performance Results
+Average Execution Times (5 runs):
+
+Split Phase: 268ms (25% of total)
+Map Phase: 572ms (53% of total)
+Reduce Phase: 231ms (22% of total)
+Total Parallel Time: 1.071 seconds
+
+Speedup Analysis:
+
+Estimated Sequential Time: 2.215 seconds (if mappers ran one after another)
+Actual Parallel Time: 1.071 seconds
+Speedup Factor: 2.07x
+
+Key Observations
+
+Parallel Processing Benefit: The Map phase, which is the most computationally intensive (53% of total time), showed the greatest benefit from parallelization. Running 3 mappers simultaneously reduced what would have been ~1.7 seconds of sequential mapping to just ~0.57 seconds.
+Consistency: The system showed reliable performance across multiple runs, with total execution time varying by less than 600ms between runs (excluding one outlier at 1.591s).
+Scalability Potential: The current 2.07x speedup with 3 mappers suggests good parallelization efficiency. Theoretical maximum speedup would be 3x if the map phase could be perfectly parallelized with zero overhead.
+
+Conclusion
+The MapReduce implementation successfully demonstrates the power of distributed computing for embarrassingly parallel problems like word counting. The 2.07x speedup validates the approach, showing that even with network and coordination overhead, parallel processing provides substantial performance improvements.
